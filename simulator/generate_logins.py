@@ -57,7 +57,8 @@ def generate_login_simulation() -> pd.DataFrame:
             num_attempts = num_attempts,
             success_rate = 0.9,
             min_delay=1,
-            max_delay=5
+            max_delay=5,
+            stop_on_success = True
         )
         all_logs.extend(logs)
     
@@ -95,5 +96,6 @@ def generate_login_simulation() -> pd.DataFrame:
 # Run the simulation and export to CSV
 if __name__ == "__main__":
     login_df = generate_login_simulation()
-    login_df.to_csv("login_simulation.csv", index = False)
+    login_df.to_csv("data/login_simulation.csv", index = False)
+    # login_df.to_csv("login_simulation.csv", index = False)
     print("Simulation complete. File saved as 'login_simulation.csv'")
