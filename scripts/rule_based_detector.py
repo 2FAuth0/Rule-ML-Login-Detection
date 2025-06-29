@@ -1,6 +1,7 @@
 import pandas as pd
 from collections import defaultdict
 import os
+import ast
 
 # Config: thresholds for rules and used for tuning
 BRUTE_FORCE_ATTEMPT_THRESHOLD = 10
@@ -8,9 +9,14 @@ BRUTE_FORCE_TIME_THRESHOLD = 3 # seconds
 EVASIVE_DURATION_THRESHOLD = 60 # total time > 1 minutes
 EVASIVE_USERNAME_THRESHOLD = 3 # at least 3 distinct usernames in session
 LOW_SUCCESS_RATE = 0.1
+HIGH_VARIANCE_THRESOLD = 0.45
+LOW_TYPING_TIME_THRESHOLD = 0.08
 
 # Load simulated login data
 df = pd.read_csv("data/login_simulation.csv")
+
+# Parse stringified vectors into real lists
+df["keystroke_vector"] = df["keystroke_vector"].apply(ast.literal_eval)
 
 # Group by session
 sessions = df.groupby("session_id")
@@ -19,6 +25,17 @@ sessions = df.groupby("session_id")
 results = []
 
 for session_id, group in sessions:
+    # Extract All keystroke vectors in the session
+    vectors = group["keystroke_vector"].tolist()
+    flat_vector = [v for session in vectors for v in session]
+    
+    if flat_vector:
+        avg_delay = sum(flat_vector) / len(flat_vector)
+        std_delay = pd.Series(flat_vector).std()
+    else:
+        avg_delay = 0
+        std_delay = 0
+    
     usernames = group['username'].nunique()
     attempts = len(group)
     total_time = group['time_since_last'].sum()
@@ -45,6 +62,16 @@ for session_id, group in sessions:
         flag = 1
         reason = "generic_low_success"
 
+    # Rule 4: High variance in typing
+    if std_delay > HIGH_VARIANCE_THRESOLD:
+        flag = 1
+        reason = "high_typing_variance"
+    
+    # Rule 5: Unrealistically fast typing
+    elif avg_delay < LOW_SUCCESS_RATE:
+        flag = 1
+        reason = "unrealistic_typing_speed"
+
     results.append({
         "session_id": session_id,
         "username_sample": group['username'].iloc[0],
@@ -54,6 +81,8 @@ for session_id, group in sessions:
         "distince_usernames": usernames,
         "rule_prediction": flag,
         "rule_reason": reason,
+        "avg_keystroke_delay": round(avg_delay, 4),
+        "std_keystroke_delay": round(std_delay, 4),
         "true_label": group['label'].iloc[0]
     })
 
