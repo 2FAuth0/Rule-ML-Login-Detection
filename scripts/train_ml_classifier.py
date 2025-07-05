@@ -28,6 +28,15 @@ print(classification_report(y_test, y_pred, digits = 4))
 print("\n=== Confusion Matrix ===")
 print(confusion_matrix(y_test, y_pred))
 
+# Save predictions to CSV
+predictions_df = pd.DataFrame({
+    "true_label": y_test,
+    "prediction": y_pred
+})
+os.makedirs("results", exist_ok = True)
+predictions_df.to_csv("results/keystroke_ml_predictions.csv", index = False)
+print("Saved keystroke ML predictions to results/keystroke_ml_predictions.csv")
+
 # Save model
 os.makedirs("models", exist_ok = True)
 joblib.dump(clf, "models/keystroke_rf_model.joblib")

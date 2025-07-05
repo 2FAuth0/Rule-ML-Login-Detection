@@ -1,0 +1,14 @@
+==== Hybrid (Pipeline) ====
+
+              precision    recall  f1-score   support
+
+           0     1.0000    0.6560    0.7923       250
+           1     0.5376    1.0000    0.6993       100
+
+    accuracy                         0.7543       350
+   macro avg     0.7688    0.8280    0.7458       350
+weighted avg     0.8679    0.7543    0.7657       350
+
+Confusion Matrix:
+[[164  86]
+ [  0 100]]

@@ -1,0 +1,14 @@
+==== ML-Based ====
+
+              precision    recall  f1-score   support
+
+           0     1.0000    0.4200    0.5915       400
+           1     0.9387    1.0000    0.9684      3555
+
+    accuracy                         0.9413      3955
+   macro avg     0.9694    0.7100    0.7800      3955
+weighted avg     0.9449    0.9413    0.9303      3955
+
+Confusion Matrix:
+[[ 168  232]
+ [   0 3555]]
