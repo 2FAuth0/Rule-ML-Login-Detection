@@ -1,0 +1,14 @@
+==== Rule-Based ====
+
+              precision    recall  f1-score   support
+
+           0     0.9516    0.7080    0.8119       250
+           1     0.5549    0.9100    0.6894       100
+
+    accuracy                         0.7657       350
+   macro avg     0.7532    0.8090    0.7507       350
+weighted avg     0.8383    0.7657    0.7769       350
+
+Confusion Matrix:
+[[177  73]
+ [  9  91]]

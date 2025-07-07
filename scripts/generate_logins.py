@@ -10,6 +10,14 @@ NUM_NORMAL_USERS = 250
 NUM_BRUTE_FORCE_ATTACKERS = 50
 NUM_EVASIVE_ATTACKERS = 50
 
+# Load keystroke data
+KEYSTROKE_PATH = "keystroke_ml/processed/keystroke_vectors.csv"
+keystroke_df = pd.read_csv(KEYSTROKE_PATH)
+
+# Separate known and unknown vectors
+known_vectors = keystroke_df[keystroke_df["label"] == 0].drop(columns = ["label"]).values.tolist()
+unknown_vectors = keystroke_df[keystroke_df["label"] == 1].drop(columns = ["label"]).values.tolist()
+
 # Helper to generate usernames
 def generate_username(prefix: str, index: int) -> str:
     return f"{prefix}_user_{index}"
@@ -18,7 +26,8 @@ def generate_username(prefix: str, index: int) -> str:
 def simulate_login_attempts(user_type: str, user_id: str, outcomes: List[str],
                             min_delay: int, max_delay: int, 
                             varied_usernames: bool = False, 
-                            stop_on_success: bool = False) -> List[Dict]:
+                            stop_on_success: bool = False,
+                            keystroke_vector: List[float] = None):
     logs = []
     last_time = datetime.now()
     session_id = str(uuid.uuid4())
@@ -46,6 +55,7 @@ def simulate_login_attempts(user_type: str, user_id: str, outcomes: List[str],
             "session_id": session_id,
             "attempt_number": attempt + 1,
             "time_since_last": 0 if attempt == 0 else delay.total_seconds(),
+            "keystroke_vector": keystroke_vector,
             "label": 0 if user_type == "normal" else 1
         })
 
@@ -65,6 +75,7 @@ def generate_login_simulation() -> pd.DataFrame:
             ["one_try", "two_try", "three_try", "give_up"],
             weights = [0.7, 0.2, 0.05, 0.05]
         )[0]
+        vector = random.choice(known_vectors)
         if session_type == "give_up":
             outcomes = ["failure" , "failure" ,"failure"]
         elif session_type == "three_try":
@@ -80,6 +91,7 @@ def generate_login_simulation() -> pd.DataFrame:
             outcomes = outcomes,
             min_delay=3,
             max_delay=5,
+            keystroke_vector = vector
         )
         all_logs.extend(logs)
     
@@ -87,6 +99,7 @@ def generate_login_simulation() -> pd.DataFrame:
     for i in range(NUM_BRUTE_FORCE_ATTACKERS):
         num_attempts = random.randint(10, 50)
         outcomes = ["success" if random.random() < 0.01 else "failure" for _ in range(num_attempts)]
+        vector = random.choice(unknown_vectors)
         logs = simulate_login_attempts(
             user_type = "brute_force",
             user_id = str(i),
@@ -94,7 +107,8 @@ def generate_login_simulation() -> pd.DataFrame:
             min_delay= 0,
             max_delay= 1,
             varied_usernames = True,
-            stop_on_success = True
+            stop_on_success = True,
+            keystroke_vector = vector
         )
         all_logs.extend(logs)
 
@@ -102,6 +116,7 @@ def generate_login_simulation() -> pd.DataFrame:
     for i in range(NUM_EVASIVE_ATTACKERS):
         num_attempts = random.randint(5, 20)
         outcomes = ["success" if random.random() < 0.03 else "failure" for _ in range(num_attempts)]
+        vector = random.choice(unknown_vectors)
         logs = simulate_login_attempts(
             user_type = "evasive",
             user_id = str(i),
@@ -109,7 +124,8 @@ def generate_login_simulation() -> pd.DataFrame:
             min_delay = 3,
             max_delay = 15,
             varied_usernames = True,
-            stop_on_success = True
+            stop_on_success = True,
+            keystroke_vector = vector
         )
         all_logs.extend(logs)
     
@@ -118,6 +134,7 @@ def generate_login_simulation() -> pd.DataFrame:
 # Run the simulation and export to CSV
 if __name__ == "__main__":
     login_df = generate_login_simulation()
+    login_df["keystroke_vector"] = login_df["keystroke_vector"].apply(lambda x: str(x))
     login_df = login_df.sort_values("timestamp").reset_index(drop = True)
     login_df.to_csv("data/login_simulation.csv", index = False)
     print("Simulation complete. File saved as 'login_simulation.csv'")
