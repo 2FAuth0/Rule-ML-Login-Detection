@@ -57,17 +57,12 @@ for session_id, group in sessions:
         flag = 1
         reason = "evasive_pattern"
 
-    # Rule 3: suspiciously low success rate but not clearly attack
-    elif success_rate < LOW_SUCCESS_RATE and attempts >= 5:
-        flag = 1
-        reason = "generic_low_success"
-
-    # Rule 4: High variance in typing
+    # Rule 3: High variance in typing
     if std_delay > HIGH_VARIANCE_THRESOLD:
         flag = 1
         reason = "high_typing_variance"
     
-    # Rule 5: Unrealistically fast typing
+    # Rule 4: Unrealistically fast typing
     elif avg_delay < LOW_SUCCESS_RATE:
         flag = 1
         reason = "unrealistic_typing_speed"
