@@ -28,7 +28,7 @@ No code modifications are needed. Markdown cells provide inline explanations.
 ## Tuning Notebook: Rule Threshold Sensitivity
 1. Extract Tuning_Showcase_Thresholds.zip
 2. Open Tuning_Showcase_Thresholds.ipynb
-3. Run all cells.
+3. Run all cells in order
 
 This notebook evaluates only the rule-based system (No ML or hybrid logic)
 
