@@ -2,7 +2,7 @@
 
 ## Files and Structure
 
-Each ZIP archive contains a complete, runnable notebook environment. It already includes fixed-text.csv in /data. This structure not be modifed.
+Each ZIP archive contains a complete, runnable notebook environment. It already includes fixed-text.csv in /data. This structure should not be modifed.
 
 ---
 
