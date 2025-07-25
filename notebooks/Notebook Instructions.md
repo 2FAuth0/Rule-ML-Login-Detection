@@ -2,17 +2,7 @@
 
 ## Files and Structure
 
-Each ZIP archive contains a complete, runnable notebook environment:
-
-notebooks/
-├── Biometric Enchanced Login Detection Pipeline (Rule + ML Hybrid).zip
-│ ├── Biometric Enchanced Login Detection Pipeline (Rule + ML Hybrid).ipynb
-│ └── data/
-│       └── fixed-text.csv
-├── Tuning_Showcase_Thresholds.zip
-│ ├── Biometric Enchanced Login Detection Pipeline (Rule + ML Hybrid).ipynb
-│ └── data/
-│       └── fixed-text.csv
+Each ZIP archive contains a complete, runnable notebook environment. It already includes fixed-text.csv in /data. This structure not be modifed.
 
 ---
 
